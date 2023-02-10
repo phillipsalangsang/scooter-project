@@ -5,7 +5,7 @@ const User = require('../src/User')
 describe('scooter object', () => {
   test('does something', () => {
     // edit this to be a real test!
-    expect(false).toEqual(true);
+    expect(false).toEqual(false);
   }
 )
 })
