@@ -3,11 +3,11 @@ const User = require('../src/User');
 describe('User Tests', () => {
   let user;
   beforeEach(() => {
-    user = new User('johndoe', 'password123', 30);
+    user = new User('louis', 'password123', 30);
   });
 
   test('Test username', () => {
-    expect(user.username).toBe('johndoe');
+    expect(user.username).toBe('louis');
   });
 
   test('Test password', () => {
@@ -19,12 +19,12 @@ describe('User Tests', () => {
   });
 
   test('Test login', () => {
-    expect(user.login('johndoe', 'password123')).toBe(true);
+    expect(user.login('louis', 'password123')).toBe(true);
     expect(user.loggedIn).toBe(true);
   });
 
   test('Test logout', () => {
-    user.login('johndoe', 'password123');
+    user.login('louis', 'password123');
     user.logout();
     expect(user.loggedIn).toBeFalsy();
   });
