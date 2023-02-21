@@ -1,71 +1,78 @@
 const Scooter = require('../src/Scooter')
 const User = require('../src/User')
 
-describe('Scooter class', () => {
-  let scooter, user;
-  beforeEach(() => {
-    user = new User();
-    scooter = new Scooter("Station 1");
-  });
+describe('checking the scooter instance integrity', () => {
+  const scooter = new Scooter("Romford");
+  const scooter2 = new Scooter("Monument");
+  test('checking right properites in the constructor', () => {
+    expect(scooter).toHaveProperty("user",null);
+    expect(scooter.station).toBe("Romford");
+    expect(scooter).toHaveProperty("serial");
+    expect(scooter).toHaveProperty("charge");
+    expect(typeof scooter.isBroken).toBe("boolean");
+  }
+)
 
-  describe('rent method', () => {
-    it('Should check out the scooter to the user if the scooter is charged above 20% and not broken', () => {
-      const user = new User();
-      const scooter = new Scooter();
-      scooter.charge = 50;
+  test("check if static value increments", () => {
+    expect(scooter2.serial).toBe(scooter.serial + 1);
+  })
+})
 
-      scooter.rent(user);
 
-      expect(scooter.user).toEqual(user);
-      expect(scooter.station).toBeNull();
-    });
+describe('checking the rent scooter methods', () => {
+  const scooter3 = new Scooter("Romford");
+  test("checking the rent returns true", () => {
+    scooter3.charge = 90;
+    scooter3.isBroken = false;
+    expect(scooter3.rent()).toBe(true);
+  })
+  test("checking not enough charge", () => {
+    scooter3.charge = 10;
+    scooter3.isBroken = false;
+    expect(() => {
+      scooter3.rent();
+    }).toThrow("scooter needs to charge");
+  })
+  test("checking needs repair", () => {
+    scooter3.charge = 60;
+    scooter3.isBroken = true;
+    expect(() => {
+      scooter3.rent();
+    }).toThrow("scooter needs repair");
+  })
 
-    it('Should throw an error if the scooter is charged below 20%', () => {
-      scooter.charge = 15;
-      scooter.isBroken = false;
-      expect(() => scooter.rent(user)).toThrowError("Scooter needs to charge");
-    });
+})
 
-    it('Should throw an error if the scooter is broken', () => {
-      scooter.charge = 25;
-      scooter.isBroken = true;
-      expect(() => scooter.rent(user)).toThrowError("Scooter needs repair");
-    });
-  });
-
-  // Other test cases for dock, requestRepair, and charge methods
-
-  describe('dock method', () => {
-    test('Should return the scooter to the station and clear out the user', () => {
-      scooter.rent(user);
-      scooter.dock("Station 2");
-      expect(scooter.station).toEqual("Station 2");
-      expect(scooter.user).toBeNull();
-    });
-  });
-
-  describe('requestRepair method', () => {
-    test('Should schedule a repair in 5 seconds and set isBroken to false', async () => {
-      scooter.isBroken = true;
-      scooter.requestRepair();
-      jest.useFakeTimers();
-      jest.runAllTimers();
-      expect(scooter.isBroken).toBeFalse();
-      jest.clearAllTimers();
-    });
-  });
-
-  describe('charge method', () => {
-    test('Should incrementally update the scooter charge to 100', async () => {
-      scooter.charge = 0;
-      scooter.charge();
-      jest.useFakeTimers();
-      jest.runAllTimers();
-      expect(scooter.charge).toEqual(100);
-      jest.clearAllTimers();
-    });
-  });
+describe("checking the dock method", () => {
+  const scooter = new Scooter("Monument");
+  test("expect station to change", () => {
+    scooter.dock("Romford");
+    expect(scooter.station).toBe("Romford");
+   
+  })
+  test("expect user to be null when docked", () => {
+    scooter.dock("Manhattan");
+    
+    expect(scooter.user).toBe(null);
+  })
 });
 
+describe("Testing the repair method", () => {
+  jest.setTimeout(9000);
+  test("repair", async () => {
+    const scooter = new Scooter("Monument");
+    scooter.isBroken = true;
+    
+    await scooter.requestRepair(); 
+    expect(scooter.isBroken).toBe(false);
+  }); }
+);
 
-
+describe("Testing the charge method", () => {
+  test("recharge", async () => {
+    const scooter = new Scooter("Romford");
+    scooter.charge = 60;
+    await scooter.recharge(); 
+    expect(scooter.charge).toBe(100);
+  }); }
+);
